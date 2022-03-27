@@ -274,7 +274,11 @@ class FunctionBase:
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
         # TODO: Implement for Task 1.3.
-        raise NotImplementedError("Need to implement for Task 1.3")
+        grads = []
+        for x in inputs:
+            if not is_constant(x):
+                grads.append((x, cls.backward(x, d_output)))
+        return grads
 
 
 # Algorithms for backpropagation
