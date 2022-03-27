@@ -69,7 +69,7 @@ def sigmoid(x):
     Returns:
         float : sigmoid value
     """
-    return 1.0(1 + exp(-1 * x))
+    return 1.0 * (1 + exp(-1 * x))
 
 
 def relu(x):
