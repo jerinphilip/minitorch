@@ -41,6 +41,10 @@ def eq(x, y):
     return 1.0 if x == y else 0.0
 
 
+def gt(x, y):
+    return 1.0 if x > y else 0.0
+
+
 def max(x, y):
     ":math:`f(x) =` x if x is greater than y else y"
     return x if x > y else y

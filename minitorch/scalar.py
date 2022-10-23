@@ -276,6 +276,18 @@ class Exp(ScalarFunction):
         return operators.exp(a) * d_output
 
 
+class GT(ScalarFunction):
+    "Less-than function :math:`f(x) =` 1.0 if x is less than y else 0.0"
+
+    @staticmethod
+    def forward(ctx, a, b):
+        return operators.gt(a, b)
+
+    @staticmethod
+    def backward(ctx, d_output):
+        return 0
+
+
 class LT(ScalarFunction):
     "Less-than function :math:`f(x) =` 1.0 if x is less than y else 0.0"
 
