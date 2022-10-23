@@ -282,10 +282,9 @@ class FunctionBase:
             d_output = (d_output,)
 
         result = []
-        assert len(d_output) == len(inputs)
-        for var, dvar in zip(inputs, d_output):
-            if not is_constant(var):
-                result.append((var, dvar))
+        variables = [var for var in inputs if not is_constant(var)]
+        for var, dvar in zip(variables, d_output):
+            result.append((var, dvar))
         return result
 
 
