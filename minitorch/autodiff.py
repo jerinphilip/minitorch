@@ -274,7 +274,17 @@ class FunctionBase:
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
         # TODO: Implement for Task 1.3.
-        raise NotImplementedError("Need to implement for Task 1.3")
+
+        d_output = cls.backward(ctx, d_output)
+        if not isinstance(d_output, tuple):
+            d_output = (d_output,)
+
+        result = []
+        assert len(d_output) == len(inputs)
+        for var, dvar in zip(inputs, d_output):
+            if not is_constant(var):
+                result.append((var, dvar))
+        return result
 
 
 # Algorithms for backpropagation
