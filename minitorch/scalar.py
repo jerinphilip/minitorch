@@ -285,7 +285,7 @@ class GT(ScalarFunction):
 
     @staticmethod
     def backward(ctx, d_output):
-        return 0
+        return 0, 0
 
 
 class LT(ScalarFunction):
@@ -297,7 +297,7 @@ class LT(ScalarFunction):
 
     @staticmethod
     def backward(ctx, d_output):
-        return 0
+        return 0, 0
 
 
 class EQ(ScalarFunction):
@@ -309,7 +309,7 @@ class EQ(ScalarFunction):
 
     @staticmethod
     def backward(ctx, d_output):
-        return 0
+        return 0, 0
 
 
 def derivative_check(f, *scalars):
