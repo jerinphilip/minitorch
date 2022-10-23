@@ -161,6 +161,18 @@ class Add(ScalarFunction):
         return d_output, d_output
 
 
+class Sub(ScalarFunction):
+    "Addition function :math:`f(x, y) = x + y`"
+
+    @staticmethod
+    def forward(ctx, a, b):
+        return a - b
+
+    @staticmethod
+    def backward(ctx, d_output):
+        return d_output, -1 * d_output
+
+
 class Log(ScalarFunction):
     "Log function :math:`f(x) = log(x)`"
 
