@@ -282,9 +282,10 @@ class FunctionBase:
             d_output = (d_output,)
 
         result = []
-        variables = [var for var in inputs if not is_constant(var)]
-        for var, dvar in zip(variables, d_output):
-            result.append((var, dvar))
+        assert len(d_output) == len(inputs)
+        for var, dvar in zip(inputs, d_output):
+            if not is_constant(var):
+                result.append((var, dvar))
         return result
 
 
@@ -365,9 +366,11 @@ def backpropagate(variable, deriv):
             values = [
                 value for value in scalar.history.inputs if not is_constant(value)
             ]
+
             grads = scalar.history.backprop_step(d_scalars[scalar.name])
 
             assert len(values) == len(grads)
+
             for v, dv in zip(values, grads):
                 d_scalars[v.name] += dv
         else:
