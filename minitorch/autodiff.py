@@ -1,3 +1,5 @@
+from collections import deque, defaultdict
+
 variable_count = 1
 
 
@@ -190,8 +192,8 @@ class History:
         Returns:
             list of numbers : a derivative with respect to `inputs`
         """
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError("Need to implement for Task 1.4")
+        derivatives = self.last_fn.chain_rule(self.ctx, self.inputs, d_output)
+        return [grad for value, grad in derivatives]
 
 
 class FunctionBase:
@@ -306,7 +308,36 @@ def topological_sort(variable):
                             starting from the right.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+
+    queue = deque()
+    queue.append(variable)
+    indeg = defaultdict(int)
+    adj = defaultdict(list)
+    leaves = []
+    while queue:
+        front = queue.popleft()
+        if front.is_leaf():
+            leaves.append(front)
+        previous_vars = front.history.inputs
+        if previous_vars is not None:
+            for var in previous_vars:
+                if not is_constant(var):
+                    queue.append(var)
+                    adj[var.name].append(front)
+                    indeg[front.name] += 1
+
+    queue = deque()
+    topological_order = []
+    queue.extend(leaves)
+    while queue:
+        front = queue.popleft()
+        topological_order.append(front)
+        for next_var in adj[front.name]:
+            indeg[next_var.name] -= 1
+            if indeg[next_var.name] == 0:
+                queue.append(next_var)
+
+    return reversed(topological_order)
 
 
 def backpropagate(variable, deriv):
@@ -323,4 +354,22 @@ def backpropagate(variable, deriv):
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+
+    scalars = topological_sort(variable)
+    scalars = list(scalars)
+
+    d_scalars = defaultdict(float)
+    d_scalars[variable.name] = deriv
+
+    for scalar in scalars:
+        if not scalar.is_leaf():
+            values = [
+                value for value in scalar.history.inputs if not is_constant(value)
+            ]
+            grads = scalar.history.backprop_step(d_scalars[scalar.name])
+
+            assert len(values) == len(grads)
+            for v, dv in zip(values, grads):
+                d_scalars[v.name] += dv
+        else:
+            scalar.accumulate_derivative(d_scalars[scalar.name])
