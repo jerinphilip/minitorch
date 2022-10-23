@@ -356,22 +356,23 @@ def backpropagate(variable, deriv):
     # TODO: Implement for Task 1.4.
 
     scalars = topological_sort(variable)
-    scalars = list(scalars)
+    queue = deque(scalars)
 
     d_scalars = defaultdict(float)
     d_scalars[variable.name] = deriv
 
-    for scalar in scalars:
+    while queue:
+        scalar = queue.popleft()
         if not scalar.is_leaf():
             values = [
                 value for value in scalar.history.inputs if not is_constant(value)
             ]
 
             grads = scalar.history.backprop_step(d_scalars[scalar.name])
-
             assert len(values) == len(grads)
 
             for v, dv in zip(values, grads):
-                d_scalars[v.name] += dv
-        else:
-            scalar.accumulate_derivative(d_scalars[scalar.name])
+                if not v.is_leaf():
+                    d_scalars[v.name] += dv
+                else:
+                    v.accumulate_derivative(dv)
