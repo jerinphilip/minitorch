@@ -26,8 +26,15 @@ def index_to_position(index, strides):
         int : position in storage
     """
 
-    # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    i = 0
+
+    accumulator = 0
+    ndim = len(index)
+    while i < ndim:
+        accumulator += index[i] * strides[i]
+        i = i + 1
+
+    return accumulator
 
 
 def to_index(ordinal, shape, out_index):
@@ -46,8 +53,10 @@ def to_index(ordinal, shape, out_index):
       None : Fills in `out_index`.
 
     """
-    # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    strides = strides_from_shape(shape)
+    for idx, stride in enumerate(strides):
+        out_index[idx] = ordinal // stride
+        ordinal = ordinal % stride
 
 
 def broadcast_index(big_index, big_shape, shape, out_index):
@@ -193,8 +202,9 @@ class TensorData:
             range(len(self.shape))
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
-        # TODO: Implement for Task 2.1.
-        raise NotImplementedError("Need to implement for Task 2.1")
+        permuted_shape = [self._shape[idx] for idx in order]
+        permuted_strides = [self._strides[idx] for idx in order]
+        return TensorData(self._storage, tuple(permuted_shape), tuple(permuted_strides))
 
     def to_string(self):
         s = ""
