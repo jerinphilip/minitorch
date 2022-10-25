@@ -26,8 +26,15 @@ def index_to_position(index, strides):
         int : position in storage
     """
 
-    # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    i = 0
+
+    accumulator = 0
+    ndim = len(index)
+    while i < ndim:
+        accumulator += index[i] * strides[i]
+        i = i + 1
+
+    return accumulator
 
 
 def to_index(ordinal, shape, out_index):
@@ -46,8 +53,10 @@ def to_index(ordinal, shape, out_index):
       None : Fills in `out_index`.
 
     """
-    # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    strides = strides_from_shape(shape)
+    for idx, stride in enumerate(strides):
+        out_index[idx] = ordinal // stride
+        ordinal = ordinal % stride
 
 
 def broadcast_index(big_index, big_shape, shape, out_index):
@@ -85,8 +94,34 @@ def shape_broadcast(shape1, shape2):
     Raises:
         IndexingError : if cannot broadcast
     """
-    # TODO: Implement for Task 2.2.
-    raise NotImplementedError("Need to implement for Task 2.2")
+    j = 0
+    dim1 = len(shape1)
+    dim2 = len(shape2)
+
+    rshape1 = list(reversed(shape1))
+    rshape2 = list(reversed(shape2))
+
+    result = [None for _ in range(max(dim1, dim2))]
+    while j < dim1 and j < dim2:
+        # Either of the dims should be 1
+        if not (rshape1[j] == 1 or rshape2[j] == 1):
+            # If they're not 1, they should be equal. Otherwise hard to broadcast.
+            # Multiples could be fine, but better ban.
+            if not rshape1[j] == rshape2[j]:
+                raise IndexingError
+
+        result[j] = max(rshape1[j], rshape2[j])
+        j = j + 1
+
+    while j < dim1:
+        result[j] = rshape1[j]
+        j = j + 1
+
+    while j < dim2:
+        result[j] = rshape2[j]
+        j = j + 1
+
+    return tuple(reversed(result))
 
 
 def strides_from_shape(shape):
@@ -193,8 +228,9 @@ class TensorData:
             range(len(self.shape))
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
-        # TODO: Implement for Task 2.1.
-        raise NotImplementedError("Need to implement for Task 2.1")
+        permuted_shape = [self._shape[idx] for idx in order]
+        permuted_strides = [self._strides[idx] for idx in order]
+        return TensorData(self._storage, tuple(permuted_shape), tuple(permuted_strides))
 
     def to_string(self):
         s = ""
