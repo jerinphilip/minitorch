@@ -94,8 +94,34 @@ def shape_broadcast(shape1, shape2):
     Raises:
         IndexingError : if cannot broadcast
     """
-    # TODO: Implement for Task 2.2.
-    raise NotImplementedError("Need to implement for Task 2.2")
+    j = 0
+    dim1 = len(shape1)
+    dim2 = len(shape2)
+
+    rshape1 = list(reversed(shape1))
+    rshape2 = list(reversed(shape2))
+
+    result = [None for _ in range(max(dim1, dim2))]
+    while j < dim1 and j < dim2:
+        # Either of the dims should be 1
+        if not (rshape1[j] == 1 or rshape2[j] == 1):
+            # If they're not 1, they should be equal. Otherwise hard to broadcast.
+            # Multiples could be fine, but better ban.
+            if not rshape1[j] == rshape2[j]:
+                raise IndexingError
+
+        result[j] = max(rshape1[j], rshape2[j])
+        j = j + 1
+
+    while j < dim1:
+        result[j] = rshape1[j]
+        j = j + 1
+
+    while j < dim2:
+        result[j] = rshape2[j]
+        j = j + 1
+
+    return tuple(reversed(result))
 
 
 def strides_from_shape(shape):
