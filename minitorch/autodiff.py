@@ -97,6 +97,9 @@ class Variable:
         "Placeholder for tensor variables"
         return x
 
+    def __hash__(self):
+        return hash(self.name)
+
     # Helper functions for children classes.
 
     def __radd__(self, b):
@@ -376,3 +379,26 @@ def backpropagate(variable, deriv):
                     d_scalars[v.name] += dv
                 else:
                     v.accumulate_derivative(dv)
+
+
+def graph(output: Variable):
+    """
+    Creates a graph (proper adjacency list) given an output node for graphviz
+    rendering of a node.
+    """
+    queue = deque()
+    queue.append(output)
+    adj = defaultdict(list)
+    leaves = set()
+    while queue:
+        front = queue.popleft()
+        if front.is_leaf():
+            leaves.add(front)
+        previous_vars = front.history.inputs
+        if previous_vars is not None:
+            for var in previous_vars:
+                if not is_constant(var):
+                    queue.append(var)
+                    adj[var].append(front)
+                    # adj[var.name].append(front)
+    return {"graph": adj, "frontier": leaves}
