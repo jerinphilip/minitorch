@@ -76,6 +76,9 @@ class Scalar(Variable):
     def __eq__(self, b):
         return EQ.apply(self, b)
 
+    def __hash__(self):
+        return super().__hash__()
+
     def __sub__(self, b):
         return Sub.apply(self, b)
 
